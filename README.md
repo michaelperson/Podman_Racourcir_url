@@ -50,7 +50,7 @@ Les dépendances sont épinglées dans `package.json` et `package-lock.json`
 
 | Variable               | Défaut            | Rôle                                                        |
 |------------------------|-------------------|-------------------------------------------------------------|
-| `HOST`                 | `localhost`       | adresse d'écoute du serveur HTTP                            |
+| `HOST`                 | `0.0.0.0`         | adresse d'écoute du serveur HTTP (0.0.0.0 = toutes les interfaces, indispensable en conteneur) |
 | `PORT`                 | `3000`            | port d'écoute du serveur HTTP                               |
 | `PUBLIC_URL`           | *(vide)*          | URL publique des liens courts ; vide = déduite de la requête |
 | `MONGO_HOST`           | `localhost`       | hôte MongoDB                                                |
@@ -102,6 +102,19 @@ curl http://localhost:3000/api/links
 
 Si MongoDB n'est pas joignable, l'application réessaie `MONGO_RETRIES` fois
 (un message par tentative dans les logs), puis s'arrête avec un code d'erreur.
+
+## Lancer l'application avec Podman (branche `solutions`)
+
+```bash
+mkdir -p secrets
+printf '%s' 'un-mot-de-passe-solide' > secrets/mongo_password.txt   # sans retour à la ligne
+chmod 644 secrets/mongo_password.txt
+podman compose up -d --build
+podman compose ps                 # les deux services doivent être « healthy »
+```
+
+Application sur <http://localhost:8080>. Détails et correction du cas pratique :
+[CORRIGE.md](CORRIGE.md).
 
 ## Licence
 
