@@ -15,7 +15,10 @@ function lireMotDePasse() {
 
 const config = {
   // Serveur HTTP
-  host: process.env.HOST || 'localhost',
+  // 0.0.0.0 : écoute sur toutes les interfaces. Dans un conteneur, c'est
+  // indispensable : les connexions publiées (-p / ports:) arrivent sur
+  // l'interface réseau du conteneur, jamais sur son 127.0.0.1.
+  host: process.env.HOST || '0.0.0.0',
   port: Number(process.env.PORT) || 3000,
 
   // URL publique utilisée pour construire les liens courts.
