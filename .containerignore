@@ -1,0 +1,13 @@
+# Contexte de build minimal : ni dépendances locales, ni secrets, ni fichiers inutiles.
+node_modules
+npm-debug.log*
+.env
+.env.*
+secrets
+.git
+.github
+quadlet
+*.md
+compose.yaml
+Containerfile
+.containerignore
