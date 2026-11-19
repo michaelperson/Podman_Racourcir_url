@@ -1,0 +1,35 @@
+# Application du raccourcisseur d'URL, gérée par systemd via Quadlet.
+# L'image doit exister localement :  podman build -t localhost/raccourcisseur-url:1.0.0 .
+[Unit]
+Description=Raccourcisseur d'URL - application
+Requires=raccourcisseur-mongo.service
+After=raccourcisseur-mongo.service
+
+[Container]
+ContainerName=raccourcisseur-app
+Image=localhost/raccourcisseur-url:1.0.0
+Network=raccourcisseur.network
+PublishPort=8080:3000
+Environment=HOST=0.0.0.0
+Environment=PORT=3000
+Environment=MONGO_HOST=mongo
+Environment=MONGO_USER=raccourcisseur
+Environment=MONGO_PASSWORD_FILE=/run/secrets/mongo_password
+Secret=mongo_password
+HealthCmd=node src/healthcheck.js
+HealthInterval=10s
+HealthTimeout=5s
+HealthRetries=3
+HealthStartPeriod=10s
+Notify=healthy
+# Durcissement
+ReadOnly=true
+DropCapability=all
+NoNewPrivileges=true
+
+[Service]
+Restart=on-failure
+TimeoutStartSec=120
+
+[Install]
+WantedBy=default.target

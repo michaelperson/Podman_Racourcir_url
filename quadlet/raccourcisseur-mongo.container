@@ -1,0 +1,30 @@
+# MongoDB du raccourcisseur d'URL, géré par systemd via Quadlet.
+[Unit]
+Description=Raccourcisseur d'URL - MongoDB
+
+[Container]
+ContainerName=raccourcisseur-mongo
+Image=docker.io/library/mongo:8.0.38
+Network=raccourcisseur.network
+NetworkAlias=mongo
+Volume=raccourcisseur-mongo.volume:/data/db
+Environment=MONGO_INITDB_ROOT_USERNAME=raccourcisseur
+Environment=MONGO_INITDB_ROOT_PASSWORD_FILE=/run/secrets/mongo_password
+# Secret Podman, créé au préalable :  podman secret create mongo_password secrets/mongo_password.txt
+# Monté en fichier dans /run/secrets/mongo_password.
+Secret=mongo_password
+HealthCmd=mongosh --quiet --norc --eval "db.adminCommand('ping')"
+HealthInterval=10s
+HealthTimeout=5s
+HealthRetries=5
+HealthStartPeriod=30s
+# Le service n'est déclaré « démarré » qu'une fois le conteneur en bonne santé :
+# l'équivalent de « condition: service_healthy » pour les unités qui en dépendent.
+Notify=healthy
+
+[Service]
+Restart=on-failure
+TimeoutStartSec=300
+
+[Install]
+WantedBy=default.target

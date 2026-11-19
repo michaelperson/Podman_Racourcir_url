@@ -1,0 +1,3 @@
+# Réseau dédié (Podman crée le réseau « systemd-raccourcisseur »).
+# Le DNS interne de Podman y résout les noms et alias des conteneurs.
+[Network]

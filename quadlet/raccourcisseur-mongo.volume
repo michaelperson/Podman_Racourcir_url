@@ -1,0 +1,2 @@
+# Volume nommé des données MongoDB (Podman crée « systemd-raccourcisseur-mongo »).
+[Volume]
