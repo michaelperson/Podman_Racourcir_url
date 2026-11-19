@@ -310,11 +310,15 @@ et, en complément, avec Podman 6.2.0 + podman-compose 1.6.0 dans un conteneur
 - branche `main` avec un Containerfile naïf : panne reproduite (refus de connexion
   depuis l'hôte, `::1:3000` en écoute dans le conteneur), lodash 4.17.11 remonté en
   CRITICAL par Trivy ;
-- unités Quadlet validées par `quadlet -dryrun` (Podman 6.2.0).
+- unités Quadlet validées par `quadlet -dryrun` (Podman 6.2.0) ;
+- workflow GitHub Actions exécuté sur la branche `solutions` : build Podman et scan
+  Trivy au vert (l'étape de publication, réservée à `main` et aux tags, n'a pas tourné).
 
 **À vérifier par le formateur sur un vrai poste Podman rootless** (non testable ici) :
 initialisation de MongoDB et healthchecks périodiques en rootless, lecture du secret
 par l'UID 1000 en rootless (droits du fichier), comportement de la panne avec le
 réseau par défaut `pasta` (`podman run -p` sans réseau dédié : les versions récentes
 de pasta ne relaient plus vers le loopback du conteneur, d'anciennes versions le
-faisaient), unités Quadlet réellement démarrées par systemd, et le workflow CI.
+faisaient), unités Quadlet réellement démarrées par systemd, et la publication
+sur ghcr.io (premier push : rendre le package public si besoin, dans les réglages
+du package).
