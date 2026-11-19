@@ -1,0 +1,12 @@
+node_modules/
+npm-debug.log*
+
+# Configuration locale et secrets : jamais dans le dépôt
+.env
+secrets/
+
+# Éditeurs et systèmes
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

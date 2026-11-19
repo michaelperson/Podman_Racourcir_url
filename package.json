@@ -1,0 +1,19 @@
+{
+  "name": "raccourcisseur-url",
+  "version": "1.0.0",
+  "description": "Raccourcisseur d'URL (Node.js, Express, MongoDB) - cas pratique final du cours Podman pour développeurs",
+  "main": "src/server.js",
+  "private": true,
+  "license": "Apache-2.0",
+  "scripts": {
+    "start": "node --env-file-if-exists=.env src/server.js"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "dependencies": {
+    "express": "5.2.1",
+    "lodash": "4.17.11",
+    "mongodb": "7.9.1"
+  }
+}

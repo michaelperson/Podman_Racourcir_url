@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Raccourcisseur d'URL</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 48rem; margin: 2rem auto; padding: 0 1rem; color: #1f2933; }
+    h1 { font-size: 1.6rem; }
+    form { display: flex; gap: .5rem; }
+    input { flex: 1; padding: .6rem; font-size: 1rem; }
+    button { padding: .6rem 1rem; font-size: 1rem; cursor: pointer; }
+    #resultat { margin: 1rem 0; min-height: 1.5rem; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { text-align: left; padding: .4rem; border-bottom: 1px solid #d9e2ec; word-break: break-all; }
+    .erreur { color: #b42318; }
+  </style>
+</head>
+<body>
+  <h1>Raccourcisseur d'URL</h1>
+
+  <form id="formulaire">
+    <input id="url" type="url" placeholder="https://exemple.org/une/adresse/tres/longue" required>
+    <button type="submit">Raccourcir</button>
+  </form>
+  <p id="resultat"></p>
+
+  <h2>Liens créés</h2>
+  <table>
+    <thead><tr><th>Lien court</th><th>URL d'origine</th><th>Clics</th></tr></thead>
+    <tbody id="liens"></tbody>
+  </table>
+
+  <script>
+    // Crée une cellule de tableau (textContent : pas d'injection HTML)
+    function cellule(contenu) {
+      const td = document.createElement('td');
+      if (contenu instanceof Node) td.appendChild(contenu); else td.textContent = contenu;
+      return td;
+    }
+
+    function lienCliquable(href) {
+      const a = document.createElement('a');
+      a.href = href;
+      a.textContent = href;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      return a;
+    }
+
+    // Recharge la liste des liens
+    async function chargerLiens() {
+      const tbody = document.getElementById('liens');
+      try {
+        const reponse = await fetch('/api/links');
+        const liens = await reponse.json();
+        tbody.replaceChildren(...liens.map((lien) => {
+          const tr = document.createElement('tr');
+          tr.append(cellule(lienCliquable(lien.shortUrl)), cellule(lien.url), cellule(String(lien.clicks)));
+          return tr;
+        }));
+      } catch {
+        tbody.replaceChildren();
+      }
+    }
+
+    // Envoie l'URL longue à l'API
+    document.getElementById('formulaire').addEventListener('submit', async (evt) => {
+      evt.preventDefault();
+      const resultat = document.getElementById('resultat');
+      resultat.className = '';
+      const reponse = await fetch('/api/links', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: document.getElementById('url').value }),
+      });
+      const corps = await reponse.json();
+      if (reponse.ok) {
+        resultat.replaceChildren('Lien court : ', lienCliquable(corps.shortUrl));
+        document.getElementById('url').value = '';
+        chargerLiens();
+      } else {
+        resultat.className = 'erreur';
+        resultat.textContent = corps.error || 'Erreur';
+      }
+    });
+
+    // Rafraîchit le compteur de clics au retour sur l'onglet
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) chargerLiens(); });
+    chargerLiens();
+  </script>
+</body>
+</html>
